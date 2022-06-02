@@ -1,9 +1,14 @@
 package com.wapl.mutant.domain.model;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,10 +19,20 @@ public class ADN {
   private List<String> adnChar;
   private Integer columnLimit;
   private Integer rowLimit;
+  private static Predicate<List<String>> validADN = adn ->{
+    Comparator<String> comparator = Comparator.comparing(String::length);
+    BinaryOperator<String> maxLenght = BinaryOperator.maxBy(comparator);
+    BinaryOperator<String> minLenght = BinaryOperator.minBy(comparator);
+    BiPredicate<String, String> equalsLength = (min, max) -> min.length() == max.length();
+    
+    Optional<String> maxLength = adn.stream().reduce(maxLenght);
+    Optional<String> minLength = adn.stream().reduce(minLenght);
+    return maxLength.get().length() - LENGTHADN >= 0
+        && adn.size() - LENGTHADN >= 0 && equalsLength.test(minLength.get(), maxLength.get());
+  };
 
   public static final Function<List<String>, ADN> loadADN = (List<String> adn) -> {
-    if (adn.get(0).length() - LENGTHADN < 0 || adn.size() - LENGTHADN < 0)
-      throw new RuntimeException();
+    if (!validADN.test(adn)) throw new RuntimeException();
     return ADN.builder().adnChar(adn).columnLimit(adn.get(0).length() - LENGTHADN)
         .rowLimit(adn.size() - LENGTHADN).build();
   };
@@ -31,4 +46,5 @@ public class ADN {
         }
         return subADN;
       };
+
 }

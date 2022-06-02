@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class MutantsController {
+public class MutantController {
   @Bean
   public RouterFunction<ServerResponse> routes(IMutantService handler){
       return RouterFunctions.route(POST("mutant"), handler::isMutant);
