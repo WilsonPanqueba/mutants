@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 @Service
 @AllArgsConstructor
 public class MutantHandler implements IMutantHandler {
+  private Mutants mutants;
   /**
    * Genera respuesta en caso de exception
    * 
@@ -40,9 +41,8 @@ public class MutantHandler implements IMutantHandler {
   @Override
   public Mono<ServerResponse> isMutant(ServerRequest request) {
     Mono<DnaRequest> dnaRequestMono = request.bodyToMono(DnaRequest.class);
-    return dnaRequestMono.map(dna -> {
-      Mutants adn = new Mutants(dna.getDna());
-      return adn.isMutant.getAsBoolean();
-    }).flatMap(returnServerResponse).onErrorResume(returnServerResponseError::apply);
+    return dnaRequestMono.map(dna -> mutants.isMutant.test(dna.getDna()))
+        .flatMap(returnServerResponse)
+        .onErrorResume(returnServerResponseError::apply);
   }
 }
