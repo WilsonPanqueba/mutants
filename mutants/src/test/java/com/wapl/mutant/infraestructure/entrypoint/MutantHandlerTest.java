@@ -1,13 +1,10 @@
 package com.wapl.mutant.infraestructure.entrypoint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import java.util.List;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,18 +13,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import com.wapl.mutant.infraestructure.helper.DnaRequest;
-import com.wapl.mutant.usecases.Mutants;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(MockitoExtension.class)
-class MutantServiceTest {
+class MutantHandlerTest {
   @InjectMocks
-  MutantService mutantService;
+  MutantHandler mutantService;
   @Mock
   ServerRequest request;
   
   @ParameterizedTest
-  @ValueSource(strings = {"ATAAAG,CAGA,TTAAA", "ATG,CAG,TTA","ATGG,CAGG,TTAA","ATG,CAG,TTA,TTA"})
+  @ValueSource(strings = {"ATAAAG,CAGA,TTAAX","ATAAAG,CAGA,TTAAA", "ATG,CAG,TTA","ATGG,CAGG,TTAA","ATG,CAG,TTA,TTA"})
   void mutantsBadRequest(String values){
     DnaRequest dnaRequest= new DnaRequest();
     dnaRequest.setDna(List.of(values.split(",")));

@@ -1,10 +1,12 @@
 package com.wapl.mutant;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +18,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import com.wapl.mutant.infraestructure.entrypoint.MutantHandler;
 import com.wapl.mutant.infraestructure.helper.DnaRequest;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -25,14 +30,34 @@ class MutantApplicationTests {
 
   @Autowired
   private TestRestTemplate restTemplate;
+  @Autowired
+  private MutantHandler mutantHandler;
+  @Autowired
+  RouterFunction<ServerResponse> mutantRoute;
 
 	@Test
 	void contextLoads() {
+      assertThat(mutantHandler).isNotNull();
+      assertThat(mutantRoute).isNotNull();
 	  
 	}
 	
 	@ParameterizedTest
-    @ValueSource(strings = {"ATAAAG,CAGA,TTAAA", "ATG,CAG,TTA","ATGG,CAGG,TTAA","ATG,CAG,TTA,TTA"})
+	@NullSource
+    void requestBadRequestNull(List<String> values) throws Exception {
+      final String baseUrl = "http://localhost:"+port+"/mutant";
+      URI uri = new URI(baseUrl);
+      HttpHeaders headers = new HttpHeaders();
+      headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+      DnaRequest dnaRequest= new DnaRequest();
+      dnaRequest.setDna(values);
+      HttpEntity<DnaRequest> request = new HttpEntity<>(dnaRequest, headers);
+      ResponseEntity<String> result = this.restTemplate.postForEntity(uri, request, String.class);
+      assertEquals(HttpStatus.BAD_REQUEST,result.getStatusCode());
+    }
+	
+	@ParameterizedTest
+    @ValueSource(strings = {"", "ATAAAG,CAGA,TTAAX","ATAAAG,CAGA,TTAAA", "ATG,CAG,TTA","ATGG,CAGG,TTAA","ATG,CAG,TTA,TTA"})
     void requestBadRequest(String values) throws Exception {
 	  final String baseUrl = "http://localhost:"+port+"/mutant";
       URI uri = new URI(baseUrl);

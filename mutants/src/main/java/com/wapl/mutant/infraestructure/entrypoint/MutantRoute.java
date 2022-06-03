@@ -10,9 +10,16 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class MutantController {
+public class MutantRoute {
+  /**
+   * Valida si una cadena de ADN es mutante
+   * 
+   * @param request Soicitud cuyo body es una estructura DnaRequest
+   * @return Si es mutante retorna status OK, si no es mutante retorna FORBIDDEN y si hay error en los datos retorna  BADREQUEST
+   * @see IMutantHandler
+   */
   @Bean
-  public RouterFunction<ServerResponse> routes(IMutantService handler){
+  public RouterFunction<ServerResponse> routes(IMutantHandler handler){
       return RouterFunctions.route(POST("mutant"), handler::isMutant);
   }
 
