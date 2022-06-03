@@ -1,119 +1,138 @@
 
 package com.wapl.mutant.usecases;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import com.wapl.mutant.domain.model.ADN;
 
-import com.wapl.mutant.entities.ADN;
-import com.wapl.mutant.entities.Coordinates;
+public class Mutants extends ADN  {
+  private static final Integer LENGTHSUBADN = 4;
+  public Mutants(List<String> structureADN) {
+    super(structureADN);
+  }
 
-import reactor.core.publisher.Mono;
+  private static final List<String> MUTATIONES = Arrays.asList("AAAA", "TTTT", "CCCC", "GGGG");
+  /**
+   * Compara dos moleculas de ADN
+   * 
+   * @param MoleculeBase
+   * @param MoleculeActual
+   * @return Si las moleculas no son iguales retorna TRUE y no es mutante, Si son iguales retorna
+   *         FALSE puede ser mutante
+   */
+  private BiPredicate<String, String> notMutant =
+      (MoleculeBase, MoleculeActual) -> !MoleculeBase.equals(MoleculeActual);
 
-public class Mutants {
+  /**
+   * Valida la diagonal desde Izquierda Superior a Derecha Inferior en una seccion de ADN de 4x4
+   * 
+   * @param subADN
+   * @return Si la seccion de ADN tiene una secuencia en donde todas las moleculas son iguales en la
+   *         diagonal desde Izquierda Superior a Derecha Inferior retorna TRUE indicando que es
+   *         mutante Si alguna es diferente retorna FALSE indicando que no es mutante
+   */
+  private Predicate<List<String>> isMutantDiagonalLR = (List<String> subADN) -> {
+    for (Integer filaSubADN = 1; filaSubADN < LENGTHSUBADN; filaSubADN++) {
+      if (notMutant.test(String.valueOf(subADN.get(0).charAt(0)),
+          String.valueOf(subADN.get(filaSubADN).charAt(filaSubADN))))
+        return false;
+    }
+    return true;
+  };
 
-	private static final List<String> MUTACIONES = Arrays.asList("AAAA", "TTTT", "CCCC", "GGGG");
+  /**
+   * Valida la diagonal desde Derecha Superior a Izquierda Inferior en una seccion de ADN de 4x4
+   * 
+   * @param subADN
+   * @return Si la seccion de ADN tiene una secuencia en donde todas las moleculas son iguales en la
+   *         diagonal desde Izquierda Superior a Derecha Inferior retorna TRUE indicando que es
+   *         mutante Si alguna es diferente retorna FALSE indicando que no es mutante
+   */
+  private Predicate<List<String>> isMutantDiagonalRL = (List<String> subADN) -> {
 
-	private Mutants() {
-		throw new IllegalStateException("Utility class");
-	}
+    for (Integer rowActual = 2; rowActual >= 0; rowActual--) {
+      if (notMutant.test(String.valueOf(subADN.get(3).charAt(0)),
+          String.valueOf(subADN.get(rowActual).charAt(3 - rowActual))))
+        return false;
 
-	private static final Function<List<String>, ADN> loadADN = (List<String> adn) -> {
-		Integer columnas = adn.get(0).length();
-		Integer filas = adn.size();
-		return new ADN(adn, columnas, filas);
-	};
+    }
+    return true;
+  };
 
-	private static final BiFunction<List<String>, Coordinates, List<String>> loadMatriz4X4 = (List<String> adnChar,
-			Coordinates cordenada) -> {
-		List<String> matrizMinima = new ArrayList<>();
-		for (Integer filIni4x4 = 0; filIni4x4 < 4; filIni4x4++) {
-			matrizMinima.add(filIni4x4, adnChar.get(cordenada.getFil() + filIni4x4).substring(cordenada.getCol(),
-					cordenada.getCol() + 4));
-		}
-		return matrizMinima;
-	};
+  /**
+   * Valida las columnas en una seccion de ADN de 4x4
+   * 
+   * @param subADN
+   * @return Si la seccion de ADN tiene una secuencia en donde todas las moleculas son iguales en
+   *         una de las columnas retorna TRUE indicando que es mutante Si ninguna de las columnas es
+   *         mutante se retorna FALSE indicando que no es mutante
+   */
+  private Predicate<List<String>> isMutantColumn = (List<String> subADN) -> {
+    Integer columnActual = 0;
+    do {
+      StringBuilder bld = new StringBuilder();
+      for (Integer rowActual = 0; rowActual < LENGTHSUBADN; rowActual++) {
+        bld.append(subADN.get(rowActual).charAt(columnActual));
+      }
+      if (MUTATIONES.contains(bld.toString()))
+        return Boolean.TRUE;
+      columnActual++;
+    } while (columnActual < LENGTHSUBADN);
+    return Boolean.FALSE;
+  };
 
-	private static final BiPredicate<String, String> compartorNotMutant = (base, actual) -> {
-		return !base.equals(actual);
-	};
+  /**
+   * Valida las filas en una seccion de ADN de 4x4
+   * 
+   * @param subADN
+   * @return Si la seccion de ADN tiene una secuencia en donde todas las moleculas son iguales en
+   *         una de las filas retorna TRUE indicando que es mutante Si ninguna de las filas es
+   *         mutante se retorna FALSE indicando que no es mutante
+   */
+  private Predicate<List<String>> isMutantRow = (List<String> subADN) -> {
+    int rowActual = 0;
+    do {
+      Boolean testMutant = null;
+      for (Integer columnActual = 1; columnActual < LENGTHSUBADN
+          && testMutant == null; columnActual++) {
+        if (notMutant.test(String.valueOf(subADN.get(rowActual).charAt(0)),
+            String.valueOf(subADN.get(rowActual).charAt(columnActual)))) {
+          testMutant = false;
+        }
+      }
+      if (testMutant == null)
+        return true;
+      rowActual++;
+    } while (rowActual < LENGTHSUBADN);
+    return false;
+  };
 
-	private static final Predicate<List<String>> isMutantDiagonalID = (List<String> matrizMinima) -> {
-		for (Integer filIni = 1; filIni < 4; filIni++) {
-			if(compartorNotMutant.test(String.valueOf(matrizMinima.get(0).charAt(0)),
-					String.valueOf(matrizMinima.get(filIni).charAt(filIni)))) 
-				return false;
-		}
-		return true;
-	};
+  /**
+   * Valida una seccion de ADN de 4x4
+   * 
+   * @param subADN
+   * @return Valida una seccion de ADN por columnas, diagonales y fila, si alguna es TRUE, es mutante
+   *         si todas son FALSE no es mutante
+   * @see #isMutantRow 
+   * @see #isMutantDiagonalRL
+   * @see #isMutantDiagonalLR
+   * @see #isMutantColumn
+   */
+  private Predicate<List<String>> validADNMutant =
+      (List<String> subADN) -> isMutantRow.test(subADN) || isMutantDiagonalLR.test(subADN)
+          || isMutantDiagonalRL.test(subADN) || (isMutantColumn.test(subADN));
 
-	private static final Predicate<List<String>> isMutantDiagonalDI = (List<String> matrizMinima) -> {
-
-		for (Integer filIni = 2; filIni >= 0; filIni--) {
-			if( compartorNotMutant.test(String.valueOf(matrizMinima.get(3).charAt(0)),
-					String.valueOf(matrizMinima.get(filIni).charAt(3-filIni)))) 
-				return false;
-			
-		}
-		return true;
-	};
-
-	private static final Predicate<List<String>> isMutantFila = (List<String> matrizMinima) -> {
-		Integer colIni = 0;
-		do {
-			StringBuilder bld = new StringBuilder();
-			for (Integer filIni = 0; filIni < 4; filIni++) {
-				bld.append(matrizMinima.get(filIni).charAt(colIni));
-			}
-			if (MUTACIONES.contains(bld.toString()))
-				return Boolean.TRUE;
-			colIni++;
-		} while (colIni < 4);
-		return Boolean.FALSE;
-	};
-
-	private static final Predicate<List<String>> isMutantColumna = (List<String> matrizMinima) -> {		
-		int filIni = 0;
-		do {
-			Boolean isMutante=null;
-			for (Integer colIni = 1; colIni < 4 && isMutante==null; colIni++) {
-				if(compartorNotMutant.test(String.valueOf(matrizMinima.get(filIni).charAt(0)),
-						String.valueOf(matrizMinima.get(filIni).charAt(colIni)))) {
-					isMutante=false;
-				}
-			}
-			if (isMutante==null)
-				return true;
-			filIni++;
-			
-		} while (filIni < 4);
-		return false;
-	};
-
-	public static final Predicate<List<String>> isMutant = (List<String> adnString) -> {
-		ADN adn = loadADN.apply(adnString);
-		Integer colFin = adn.getColumnas() - 4;
-		Integer filFin = adn.getFilas() - 4;
-		if(colFin<0||filFin<0)
-			throw new RuntimeException();
-		for (Integer filIni = 0; filIni <= filFin; filIni++) {
-			for (Integer colIni = 0; colIni <= colFin; colIni++) {
-				List<String> matrizMinima = loadMatriz4X4.apply(adn.getAdnChar(), new Coordinates(filIni, colIni));
-				if (isMutantColumna.test(matrizMinima))
-					return true;
-				if (isMutantFila.test(matrizMinima))
-					return true;
-				if (isMutantDiagonalID.test(matrizMinima))
-					return true;
-				if (isMutantDiagonalDI.test(matrizMinima))
-					return true;
-			}
-		}
-		return false;
-	};
-
+  /**
+   * Valida estructura de ADN si es mutante
+   * 
+   * @param structureADN estructura complleta de ADN
+   * @return Valida una seccion de ADN por columna, fila y diagonales, si alguna es TRUE, es mutante
+   *         si todas son FALSE no es mutante
+   * @see Mutants#getCoordinates(Integer)
+   */
+      public final BooleanSupplier isMutant = () -> getCoordinates(LENGTHSUBADN).stream().map(coordinate->
+      getSubADN.apply(coordinate, LENGTHSUBADN)).anyMatch(validADNMutant);
 }
