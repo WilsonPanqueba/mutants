@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class ADN{
-
+  private static final String REGEXADNMOLECULE="^[ATCG]*$";
   private List<String> structure;
 
   /**
@@ -35,7 +35,7 @@ public class ADN{
           .reduce(BinaryOperator.maxBy(Comparator.comparing(String::length))).get().length();
       Integer minLength = structureAdn.stream()
           .reduce(BinaryOperator.minBy(Comparator.comparing(String::length))).get().length();
-      Predicate<String> validaTuple = (String adnList) -> adnList.matches("^[ATCG]*$");
+      Predicate<String> validaTuple = (String adnList) -> adnList.matches(REGEXADNMOLECULE);
       return minLength.equals(maxLength) && structureAdn.stream().allMatch(validaTuple);
     };
 
