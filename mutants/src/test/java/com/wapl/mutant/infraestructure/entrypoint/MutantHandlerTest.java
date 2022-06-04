@@ -3,6 +3,7 @@ package com.wapl.mutant.infraestructure.entrypoint;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import java.util.List;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -55,6 +56,14 @@ class MutantHandlerTest {
         Mono<ServerResponse> result = mutantService.isMutant(request);
         result.subscribe(response -> {
           assertEquals(HttpStatus.FORBIDDEN, response.statusCode());
+        });
+  }
+  
+  @Test
+  void mutantshealth(){
+        Mono<ServerResponse> result = mutantService.health(request);
+        result.subscribe(response -> {
+          assertEquals(HttpStatus.OK, response.statusCode());
         });
   }
   

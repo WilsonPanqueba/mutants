@@ -8,5 +8,6 @@ import reactor.core.publisher.Mono;
 public interface IMutantHandler {
 
   Mono<ServerResponse> isMutant(ServerRequest request);
+  Mono<ServerResponse> health(ServerRequest request);
 
 }

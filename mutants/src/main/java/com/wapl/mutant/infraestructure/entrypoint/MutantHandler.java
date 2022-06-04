@@ -45,4 +45,16 @@ public class MutantHandler implements IMutantHandler {
         .flatMap(returnServerResponse)
         .onErrorResume(returnServerResponseError::apply);
   }
+  
+  /**
+   * Valida el estado del servicio
+   * 
+   * @param request Solicitud de health
+   * @return Si esta habiltado status OK, si no FORBIDDEN
+   * @see Mutants
+   */
+  @Override
+  public Mono<ServerResponse> health(ServerRequest request) {
+    return ServerResponse.ok().build();
+  }
 }
