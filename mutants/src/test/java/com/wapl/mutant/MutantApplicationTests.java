@@ -22,6 +22,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import com.wapl.mutant.infraestructure.entrypoint.MutantHandler;
 import com.wapl.mutant.infraestructure.helper.DnaRequest;
+import com.wapl.mutant.usecases.Mutants;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MutantApplicationTests {
@@ -33,13 +34,15 @@ class MutantApplicationTests {
   @Autowired
   private MutantHandler mutantHandler;
   @Autowired
+  private Mutants mutants;
+  @Autowired
   RouterFunction<ServerResponse> mutantRoute;
 
 	@Test
 	void contextLoads() {
       assertThat(mutantHandler).isNotNull();
       assertThat(mutantRoute).isNotNull();
-	  
+      assertThat(mutants).isNotNull();
 	}
 	
 	@ParameterizedTest

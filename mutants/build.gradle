@@ -16,20 +16,33 @@ configurations {
 
 repositories {
 	mavenCentral()
+	jcenter()
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation('org.springframework.boot:spring-boot-starter-validation')
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-    testCompile "org.mockito:mockito-junit-jupiter"
+    testImplementation 'org.mockito:mockito-junit-jupiter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
-	testImplementation('org.junit.jupiter:junit-jupiter:5.5.2')
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.5.2'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jar {
+    archiveClassifier=''
+    enabled = false
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    manifest {
+        attributes "Main-Class": "com.wapl.mutant.MutantApplication"
+    }
 }

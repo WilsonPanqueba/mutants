@@ -5,11 +5,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
+import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ADN{
-
+  private static final String REGEXADNMOLECULE="^[ATCG]*$";
   private List<String> structure;
 
   /**
@@ -17,7 +19,7 @@ public class ADN{
    * 
    * @param structureADN estructura completa de ADN
    */
-  protected ADN(List<String> structureADN) {
+  public ADN(List<String> structureADN) {
     setStructure(structureADN);
   }
 
@@ -33,7 +35,7 @@ public class ADN{
           .reduce(BinaryOperator.maxBy(Comparator.comparing(String::length))).get().length();
       Integer minLength = structureAdn.stream()
           .reduce(BinaryOperator.minBy(Comparator.comparing(String::length))).get().length();
-      Predicate<String> validaTuple = (String adnList) -> adnList.matches("^[ATCG]*$");
+      Predicate<String> validaTuple = (String adnList) -> adnList.matches(REGEXADNMOLECULE);
       return minLength.equals(maxLength) && structureAdn.stream().allMatch(validaTuple);
     };
 
@@ -50,7 +52,7 @@ public class ADN{
    * @throws RuntimeException si la estructura de ADN no es valida
    * @see Coordinate#getCoordinates
    */
-  protected List<Coordinate> getCoordinates(Integer lengthSubADN) {
+  public List<Coordinate> getCoordinates(Integer lengthSubADN) {
     if (!validCoordinate.test(lengthSubADN))
       throw new RuntimeException();
     return getCoordinates.apply(structure.size() - lengthSubADN,
@@ -102,6 +104,14 @@ public class ADN{
         return subADN;
       };
 
+  /**
+   * Genera tofas una secciones de ADN para una longitud dada
+   * 
+   * @param lengthSubADN tamaño de las secciones de ADN
+   * @return Stream de todas las posibles secciones de ADN
+   */
+   public IntFunction<Stream<List<String>>> subADNs = lengthSubADN -> getCoordinates(lengthSubADN).stream().map(coordinate->
+     getSubADN.apply(coordinate, lengthSubADN));
 
 
 }

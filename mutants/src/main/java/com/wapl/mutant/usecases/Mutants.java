@@ -4,15 +4,13 @@ package com.wapl.mutant.usecases;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
-import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import org.springframework.stereotype.Service;
 import com.wapl.mutant.domain.model.ADN;
 
-public class Mutants extends ADN  {
+@Service
+public class Mutants  {
   private static final Integer LENGTHSUBADN = 4;
-  public Mutants(List<String> structureADN) {
-    super(structureADN);
-  }
 
   private static final List<String> MUTATIONES = Arrays.asList("AAAA", "TTTT", "CCCC", "GGGG");
   /**
@@ -133,6 +131,8 @@ public class Mutants extends ADN  {
    *         si todas son FALSE no es mutante
    * @see Mutants#getCoordinates(Integer)
    */
-      public final BooleanSupplier isMutant = () -> getCoordinates(LENGTHSUBADN).stream().map(coordinate->
-      getSubADN.apply(coordinate, LENGTHSUBADN)).anyMatch(validADNMutant);
+      public final Predicate<List<String>> isMutant = (List<String> structureADN) -> {
+        ADN adn = new ADN(structureADN);
+        return adn.subADNs.apply(LENGTHSUBADN).anyMatch(validADNMutant);
+        };
 }
