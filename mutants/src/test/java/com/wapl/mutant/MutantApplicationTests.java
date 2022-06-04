@@ -102,5 +102,13 @@ class MutantApplicationTests {
       ResponseEntity<String> result = this.restTemplate.postForEntity(uri, request, String.class);
       assertEquals(HttpStatus.FORBIDDEN,result.getStatusCode());
     }
+	
+	@Test
+    void requesthealthOK() throws Exception {
+      final String baseUrl = "http://localhost:"+port+"/health";
+      URI uri = new URI(baseUrl);
+      ResponseEntity<String> result = this.restTemplate.getForEntity(uri, String.class);
+      assertEquals(HttpStatus.OK,result.getStatusCode());
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.wapl.mutant.infraestructure.entrypoint;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -20,7 +21,7 @@ public class MutantRoute {
    */
   @Bean
   public RouterFunction<ServerResponse> routes(IMutantHandler handler){
-      return RouterFunctions.route(POST("mutant"), handler::isMutant);
+      return RouterFunctions.route(POST("mutant"), handler::isMutant).andRoute(GET("health"), handler::health);
   }
 
 }
