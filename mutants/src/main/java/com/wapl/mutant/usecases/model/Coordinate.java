@@ -1,4 +1,4 @@
-package com.wapl.mutant.domain.model;
+package com.wapl.mutant.usecases.model;
 
 import lombok.Builder;
 import lombok.Getter;

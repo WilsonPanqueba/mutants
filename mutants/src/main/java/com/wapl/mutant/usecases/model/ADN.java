@@ -1,4 +1,4 @@
-package com.wapl.mutant.domain.model;
+package com.wapl.mutant.usecases.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;

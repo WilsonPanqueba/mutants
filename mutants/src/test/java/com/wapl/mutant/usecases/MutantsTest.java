@@ -14,9 +14,9 @@ class MutantsTest {
   
   @ParameterizedTest
   @NullAndEmptySource
-  void mutantsExceptionsWithNull(List<String> adnString) {
+  void mutantsExceptionsWithNull(List<String> adnStructure) {
     assertThrows(RuntimeException.class, () -> {
-      mutants.isMutant.test(adnString);
+      mutants.validMutation(adnStructure);
     });
   }
 
@@ -25,9 +25,9 @@ class MutantsTest {
   @ValueSource(strings = {"ATAAAG,CAGA,TTAAX", "ATAAAG,CAGA,TTAAA","ATG,CAG,TTA", "ATGG,CAGG,TTAA",
       "ATG,CAG,TTA,TTA"})
   void mutantsExceptionsADNError(String adnString) {
-    List<String> adn=List.of(adnString.split(","));
+    List<String> adnStructure=List.of(adnString.split(","));
     assertThrows(RuntimeException.class, () -> {
-      mutants.isMutant.test(adn);
+      mutants.validMutation(adnStructure);
     });
   }
   
@@ -39,15 +39,15 @@ class MutantsTest {
       "GACT,CATG,TAGC,GACT", "GCAT,CTAG,TGAC,GCAT", "GCTA,CTGA,TGCA,GCTA", "GCTA,CTAG,TAGC,AGCT",
       "AGCT,CATG,TGAC,GCTA", "ATGCAT,GCATGC,ATGCAT,GCATGC,ATGCAC,GCATCC,ATGCAT,GCCTGC"})
   void mutantsTrue(String adnString) {
-    List<String> adn=List.of(adnString.split(","));
-    assertTrue(mutants.isMutant.test(adn));
+    List<String> adnStructure=List.of(adnString.split(","));
+    assertTrue(mutants.validMutation(adnStructure));
   }
 
   @ParameterizedTest
   @ValueSource(
       strings = {"CTAG,AGCT,GCTA,CTAG", "ATGCAT,GCATGC,ATGCAT,GCATGC,ATGCAC,GCATAC,ATGCAT,GCCTGC"})
   void mutantsFalse(String adnString) {
-    List<String> adn=List.of(adnString.split(","));
-    assertFalse(mutants.isMutant.test(adn));
+    List<String> adnStructure=List.of(adnString.split(","));
+    assertFalse(mutants.validMutation(adnStructure));
   }
 }

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import org.springframework.stereotype.Service;
-import com.wapl.mutant.domain.model.ADN;
+import com.wapl.mutant.usecases.model.ADN;
 
 @Service
-public class Mutants  {
+public class Mutants implements IMutants {
   private static final Integer LENGTHSUBADN = 4;
 
   private static final List<String> MUTATIONES = Arrays.asList("AAAA", "TTTT", "CCCC", "GGGG");
@@ -112,9 +112,9 @@ public class Mutants  {
    * Valida una seccion de ADN de 4x4
    * 
    * @param subADN
-   * @return Valida una seccion de ADN por columnas, diagonales y fila, si alguna es TRUE, es mutante
-   *         si todas son FALSE no es mutante
-   * @see #isMutantRow 
+   * @return Valida una seccion de ADN por columnas, diagonales y fila, si alguna es TRUE, es
+   *         mutante si todas son FALSE no es mutante
+   * @see #isMutantRow
    * @see #isMutantDiagonalRL
    * @see #isMutantDiagonalLR
    * @see #isMutantColumn
@@ -131,8 +131,9 @@ public class Mutants  {
    *         si todas son FALSE no es mutante
    * @see Mutants#getCoordinates(Integer)
    */
-      public final Predicate<List<String>> isMutant = (List<String> structureADN) -> {
-        ADN adn = new ADN(structureADN);
-        return adn.subADNs.apply(LENGTHSUBADN).anyMatch(validADNMutant);
-        };
+  @Override
+  public final Boolean validMutation(List<String> structureADN) {
+    ADN adn = new ADN(structureADN);
+    return adn.subADNs.apply(LENGTHSUBADN).anyMatch(validADNMutant);
+  }
 }

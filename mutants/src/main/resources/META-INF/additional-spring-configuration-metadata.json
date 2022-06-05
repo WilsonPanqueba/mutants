@@ -1,0 +1,13 @@
+{"properties": [
+  {
+    "name": "dbname",
+    "type": "java.lang.String",
+    "description": "base de datos de mongodb"
+  },
+  {
+    "name": "port",
+    "type": "java.lang.String",
+    "description": "puerto del servidor de mongo"
+    
+  }
+]}

@@ -9,5 +9,6 @@ public interface IMutantHandler {
 
   Mono<ServerResponse> isMutant(ServerRequest request);
   Mono<ServerResponse> health(ServerRequest request);
+  Mono<ServerResponse> stats(ServerRequest request);
 
 }
