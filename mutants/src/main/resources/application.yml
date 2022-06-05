@@ -1,2 +1,6 @@
-port: 27017
-dbname: mutations
+postgresql.drive: "postgresql"
+postgresql.host: "localhost"
+postgresql.port: 5432
+postgresql.user: "postgres"
+postgresql.password: "" 
+postgresql.database: "postgres"

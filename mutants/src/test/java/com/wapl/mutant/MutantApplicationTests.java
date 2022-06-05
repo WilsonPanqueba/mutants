@@ -2,6 +2,7 @@ package com.wapl.mutant;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URI;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import com.wapl.mutant.infraestructure.entrypoint.MutantHandler;
 import com.wapl.mutant.infraestructure.helper.DnaRequest;
 import com.wapl.mutant.usecases.Mutants;
+import com.wapl.mutant.usecases.Storage;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MutantApplicationTests {
@@ -36,6 +38,8 @@ class MutantApplicationTests {
   @Autowired
   private Mutants mutants;
   @Autowired
+  private Storage storage;
+  @Autowired
   RouterFunction<ServerResponse> mutantRoute;
 
 	@Test
@@ -43,6 +47,7 @@ class MutantApplicationTests {
       assertThat(mutantHandler).isNotNull();
       assertThat(mutantRoute).isNotNull();
       assertThat(mutants).isNotNull();
+      assertThat(storage).isNotNull();
 	}
 	
 	@ParameterizedTest
@@ -109,6 +114,17 @@ class MutantApplicationTests {
       URI uri = new URI(baseUrl);
       ResponseEntity<String> result = this.restTemplate.getForEntity(uri, String.class);
       assertEquals(HttpStatus.OK,result.getStatusCode());
+    }
+	
+	@Test
+    void requeststatsOK() throws Exception {
+      final String baseUrl = "http://localhost:"+port+"/stats";
+      URI uri = new URI(baseUrl);
+      ResponseEntity<String> result = this.restTemplate.getForEntity(uri, String.class);
+      assertEquals(HttpStatus.OK,result.getStatusCode());
+      assertTrue(result.getBody().contains("count_mutant_dna"));
+      assertTrue(result.getBody().contains("count_human_dna"));
+      assertTrue(result.getBody().contains("ratio"));
     }
 
 }

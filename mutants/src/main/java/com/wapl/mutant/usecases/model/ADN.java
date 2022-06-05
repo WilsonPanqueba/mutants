@@ -9,6 +9,7 @@ import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import lombok.NonNull;
 
 public class ADN{
   private static final String REGEXADNMOLECULE="^[ATCG]*$";
@@ -19,7 +20,7 @@ public class ADN{
    * 
    * @param structureADN estructura completa de ADN
    */
-  public ADN(List<String> structureADN) {
+  public ADN(@NonNull List<String> structureADN) {
     setStructure(structureADN);
   }
 

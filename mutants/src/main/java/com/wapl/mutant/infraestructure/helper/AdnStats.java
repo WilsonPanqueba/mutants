@@ -1,16 +1,18 @@
 package com.wapl.mutant.infraestructure.helper;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import lombok.Data;
 
-@AllArgsConstructor
-@Getter
-@Setter
-public class AdnStats {
+@Data
+public class AdnStats  {
+  @Id
   private Integer countMutantDna;
   private Integer countHumanDna;
+  @Transient
   public Integer getRatio() {
-    return countMutantDna!=0?countHumanDna/countMutantDna:countMutantDna;
+    Integer respuesta = countHumanDna==0?1:countMutantDna/countHumanDna;
+    respuesta = countMutantDna==0?0:respuesta;
+    return respuesta;
   }
 }

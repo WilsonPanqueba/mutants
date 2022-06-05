@@ -5,14 +5,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import com.wapl.mutant.infraestructure.driveradapter.IStorage;
+import com.wapl.mutant.infraestructure.helper.AdnStats;
 import com.wapl.mutant.infraestructure.helper.AdnTest;
 import com.wapl.mutant.infraestructure.helper.DnaRequest;
 import com.wapl.mutant.infraestructure.helper.StatsResponse;
 import com.wapl.mutant.usecases.IMutants;
+import com.wapl.mutant.usecases.IStorage;
 import com.wapl.mutant.usecases.Mutants;
 import lombok.AllArgsConstructor;
 import reactor.core.publisher.Mono;
@@ -38,11 +38,17 @@ public class MutantHandler implements IMutantHandler {
    * @param error
    * @return Respuesta de BADREQUEST al cliente
    */
-  private static final Function<Throwable, Mono<ServerResponse>> returnServerResponseError =
+  private static final Function<Throwable, Mono<ServerResponse>> returnServerBADREQUESTError =
       (Throwable error) -> {
         error.printStackTrace();
         return ServerResponse.badRequest().build();
       };
+      
+      private static final Function<Throwable, Mono<ServerResponse>> returnServerINTERNALSERVERError=
+          (Throwable error) -> {
+            error.printStackTrace();
+            return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+          };
 
   /**
    * Valida si una cadena de ADN es mutante
@@ -60,7 +66,7 @@ public class MutantHandler implements IMutantHandler {
         .map(dnatest -> {
           storage.saveAdnTest(dnatest);
           return dnatest.isMutant();
-        }).flatMap(returnServerResponse).onErrorResume(returnServerResponseError::apply);
+        }).flatMap(returnServerResponse).onErrorResume(returnServerBADREQUESTError::apply);
   }
 
   /**
@@ -72,18 +78,28 @@ public class MutantHandler implements IMutantHandler {
    */
   @Override
   public Mono<ServerResponse> health(ServerRequest request) {
-    return ServerResponse.ok().build();
+    Mono<Boolean> result = storage.getHealth();
+    return result.flatMap(status ->
+    Boolean.TRUE.equals(status)?ServerResponse.ok().build():ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
+    ).onErrorResume(returnServerINTERNALSERVERError::apply);
   }
 
+  /**
+   * Retorna las estadisticas del servicio
+   * 
+   * @param request Solicitud de stats
+   * @return Obtiene las estadisticas de total de ADN mutantes, total del ADN no mutante y el ratio entre 
+   * total de ADN mutantes / total del ADN no mutante
+   * @see IStorage#getStats()
+   */
   @Override
   public Mono<ServerResponse> stats(ServerRequest request) {
-    storage.getStats()
-        .map(adnStats -> StatsResponse.builder().countHumanDna(adnStats.getCountHumanDna())
-            .countMutantDna(adnStats.getCountMutantDna()).ratio(adnStats.getRatio()).build());
-
-    return ServerResponse.ok().header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-        .body(BodyInserters.fromValue(storage.getStats()
-            .map(adnStats -> StatsResponse.builder().countHumanDna(adnStats.getCountHumanDna())
-                .countMutantDna(adnStats.getCountMutantDna()).ratio(adnStats.getRatio()).build())));
+    Mono<AdnStats> adnStats = storage.getStats();
+    return adnStats
+        .map(stats -> StatsResponse.builder().countHumanDna(stats.getCountHumanDna())
+            .countMutantDna(stats.getCountMutantDna()).ratio(stats.getRatio()).build())
+        .flatMap(response -> ServerResponse.ok()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(response))
+        .doOnError(Throwable::printStackTrace);
   }
 }

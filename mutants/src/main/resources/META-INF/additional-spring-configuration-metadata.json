@@ -1,13 +1,32 @@
 {"properties": [
   {
-    "name": "dbname",
+    "name": "postgresql.drive",
     "type": "java.lang.String",
-    "description": "base de datos de mongodb"
+    "description": "drive de conexion a posgresql"
   },
   {
-    "name": "port",
+    "name": "postgresql.port",
     "type": "java.lang.String",
-    "description": "puerto del servidor de mongo"
-    
+    "description": "puerto de conexion a posgresql"
+  },
+  {
+    "name": "postgresql.host",
+    "type": "java.lang.String",
+    "description": "host del servidor de base de datos"
+  },
+  {
+    "name": "postgresql.database",
+    "type": "java.lang.String",
+    "description": "base de datos"
+  },
+  {
+    "name": "postgresql.password",
+    "type": "java.lang.String",
+    "description": "clave del usuario de base de datos"
+  },
+  {
+    "name": "postgresql.user",
+    "type": "java.lang.String",
+    "description": "usuario de la base de datos"
   }
 ]}

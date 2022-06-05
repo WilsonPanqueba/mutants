@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import org.springframework.stereotype.Service;
 import com.wapl.mutant.usecases.model.ADN;
 
@@ -132,7 +134,7 @@ public class Mutants implements IMutants {
    * @see Mutants#getCoordinates(Integer)
    */
   @Override
-  public final Boolean validMutation(List<String> structureADN) {
+  public final Boolean validMutation(@NotNull @NotEmpty List<String> structureADN) {
     ADN adn = new ADN(structureADN);
     return adn.subADNs.apply(LENGTHSUBADN).anyMatch(validADNMutant);
   }
