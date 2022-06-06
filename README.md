@@ -34,3 +34,24 @@ Para la ejecución en local se puede hacer uso curl con el siguiente comando.
 "dna":["ATCG","ATCG","ATCG","ATCG"]
 }'`
 
+#Despliegue
+
+En la carpeta mutants/compute encontrara los script de bash necesario para el despliegue de la aplicación en GCP, requiere usar gs y gsutil ya sea desde su cuenta o desde local:
+
+- **mutant-startup.sh**: Script para la instancia de **Compute Engine** con el cual se instala java y se ejecuta el componente **mutant-0.0.1-SNAPSHOT.jar**
+
+- **computeengineconfig.sh**: Script para el despliegue de la siguiente manera:
+
+	- El componente **mutant-0.0.1-SNAPSHOT.jar** debe estar en la misma carpeta que estos script.
+	- El componente **mutant-0.0.1-SNAPSHOT.jar** se lleva almacena en **Cloud Storage**
+	- Crea la infraestructura de  **Compute Engine** necesaria para poder desplegar el servicio
+	- Para la ejecución en local se puede hacer uso curl con el siguiente comando, reemplazando HOST por la IP que se suministrata por el administrador de la plataforma una vez se desplieguen las instancias.
+`curl -X POST /
+  http://HOST/mutant /
+  -H 'content-type: application/json' /
+  -d '{
+"dna":["ATCG","ATCG","ATCG","ATCG"]
+}'`
+
+Para verificar que el servicio esta ejecutando puedes llamar al metodo de health
+`http://HOST/health`
