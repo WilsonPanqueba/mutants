@@ -45,7 +45,7 @@ En la carpeta mutants/compute encontrara los script de bash necesario para el de
 	- El componente **mutant-0.0.1-SNAPSHOT.jar** debe estar en la misma carpeta que estos script.
 	- El componente **mutant-0.0.1-SNAPSHOT.jar** se lleva almacena en **Cloud Storage**
 	- Crea la infraestructura de  **Compute Engine** necesaria para poder desplegar el servicio
-	- Para la ejecución en local se puede hacer uso curl con el siguiente comando, reemplazando HOST por la IP que se suministrata por el administrador de la plataforma una vez se desplieguen las instancias.
+	- Para la ejecución en **nube** se puede hacer uso curl con el siguiente comando, reemplazando HOST por la IP que se suministrata por el administrador de la plataforma una vez se desplieguen las instancias.
 `curl -X POST /
   http://HOST/mutant /
   -H 'content-type: application/json' /
