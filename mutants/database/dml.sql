@@ -13,4 +13,3 @@ CREATE INDEX adn_test_index
     ON public.adn_test USING btree
     (adn_md5 COLLATE pg_catalog."default" ASC NULLS LAST, is_mutant DESC NULLS LAST)
     TABLESPACE pg_default;
-    

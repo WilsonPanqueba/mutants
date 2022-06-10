@@ -8,7 +8,7 @@ public class AdnStatsTest {
   
   @ParameterizedTest
   @CsvSource({"0,0"})
-  void getRatioNoTest(int human, int mutant) {
+  void getRatioNoTest(float human, float mutant) {
     AdnStats adnStats = new AdnStats();
     adnStats.setCountHumanDna(human);
     adnStats.setCountMutantDna(mutant);
@@ -17,7 +17,7 @@ public class AdnStatsTest {
   
   @ParameterizedTest
   @CsvSource({"100,0"})
-  void getRatioNoMutants(int human, int mutant) {
+  void getRatioNoMutants(float human, float mutant) {
     AdnStats adnStats = new AdnStats();
     adnStats.setCountHumanDna(human);
     adnStats.setCountMutantDna(mutant);
@@ -26,7 +26,7 @@ public class AdnStatsTest {
   
   @ParameterizedTest
   @CsvSource({"0,100"})
-  void getRatioNoHumans(int human, int mutant) {
+  void getRatioNoHumans(float human, float mutant) {
     AdnStats adnStats = new AdnStats();
     adnStats.setCountHumanDna(human);
     adnStats.setCountMutantDna(mutant);
@@ -34,8 +34,8 @@ public class AdnStatsTest {
   }
   
   @ParameterizedTest
-  @CsvSource({"40,100","100,200","200,100"})
-  void getRatioMutantsAndHumans(int human, int mutant) {
+  @CsvSource({"40,100","100,200","200,100", "3,5"})
+  void getRatioMutantsAndHumans(float human, float mutant) {
     AdnStats adnStats = new AdnStats();
     adnStats.setCountHumanDna(human);
     adnStats.setCountMutantDna(mutant);

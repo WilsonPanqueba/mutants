@@ -96,8 +96,8 @@ public class MutantHandler implements IMutantHandler {
   public Mono<ServerResponse> stats(ServerRequest request) {
     Mono<AdnStats> adnStats = storage.getStats();
     return adnStats
-        .map(stats -> StatsResponse.builder().countHumanDna(stats.getCountHumanDna())
-            .countMutantDna(stats.getCountMutantDna()).ratio(stats.getRatio()).build())
+        .map(stats -> StatsResponse.builder().countHumanDna(String.format("%.0f",stats.getCountHumanDna()))
+            .countMutantDna(String.format("%.0f",stats.getCountMutantDna())).ratio(String.format("%.1f",stats.getRatio())).build())
         .flatMap(response -> ServerResponse.ok()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE).bodyValue(response))
         .doOnError(Throwable::printStackTrace);

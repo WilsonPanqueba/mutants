@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 public class AdnStats  {
   @Id
-  private Integer countMutantDna;
-  private Integer countHumanDna;
+  private float countMutantDna;
+  private float countHumanDna;
   @Transient
-  public Integer getRatio() {
-    Integer respuesta = countHumanDna==0?1:countMutantDna/countHumanDna;
+  public float getRatio() {
+    float respuesta = countHumanDna==0?1:countMutantDna/countHumanDna;
     respuesta = countMutantDna==0?0:respuesta;
     return respuesta;
   }

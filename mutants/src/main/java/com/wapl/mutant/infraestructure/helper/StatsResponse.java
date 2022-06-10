@@ -8,9 +8,9 @@ import lombok.Getter;
 @Getter
 public class StatsResponse  {
   @JsonProperty("count_mutant_dna")
-  private Integer countMutantDna;
+  private String countMutantDna;
   @JsonProperty("count_human_dna")
-  private Integer countHumanDna;
+  private String countHumanDna;
   @JsonProperty("ratio")
-  private Integer ratio;
+  private String ratio;
 }
